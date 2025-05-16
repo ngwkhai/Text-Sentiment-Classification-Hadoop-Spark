@@ -1,10 +1,7 @@
 from pyspark import SparkContext, SparkConf
-import pyspark
-from pyspark.rdd import RDD
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import HashingTF, IDF, Tokenizer
 from pyspark.ml.classification import NaiveBayes
-from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.mllib.evaluation import MulticlassMetrics
 import time
 import re
