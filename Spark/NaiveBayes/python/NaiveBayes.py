@@ -31,48 +31,52 @@ class NB:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def main(self, args):
-        conf = SparkConf().setAppName("Naive Bayes")
-        sc = SparkContext(conf=conf)
-        start_time = time.time_ns()
-        arg0 = sys.argv[1]
 
-        # Đọc và xử lý dữ liệu
-        input = sc.textFile(f"hdfs://mpi6:19000/user/mpi/spark_input_{arg0}/tweets.csv", minPartitions=3) \
-            .map(self.split_csv) \
-            .map(lambda column: (
-            float(column[1]),  # sentiment
-            self.clean_text(column[3])  # cleaned tweet
-        ))
+if __name__ == "__main__":
+    NB = NB()
+    conf = SparkConf().setAppName("Naive Bayes")
+    sc = SparkContext(conf=conf)
+    start_time = time.time_ns()
+    arg0 = sys.argv[1]
 
-        spark = SparkSession.builder.appName("Naive Bayes").getOrCreate()
-        input_dataframe = spark.createDataFrame(input, ["label", "tweet"])
+    # Đọc và xử lý dữ liệu
+    input = sc.textFile(f"hdfs://mpi6:19000/user/mpi/spark_input_{arg0}/tweets.csv", minPartitions=3) \
+        .map(NB.split_csv) \
+        .map(lambda column: (
+        float(column[1]),  # sentiment
+        NB.clean_text(column[3])  # cleaned tweet
+    ))
 
-        tokenizer = Tokenizer().setInputCol("tweet").setOutputCol("words")
-        words_data = tokenizer.transform(input_dataframe)
+    spark = SparkSession.builder.appName("Naive Bayes").getOrCreate()
+    input_dataframe = spark.createDataFrame(input, ["label", "tweet"])
 
-        input_hashingTF = HashingTF().setInputCol("words").setOutputCol("rawFeatures")
-        input_featurized_data = input_hashingTF.transform(words_data)
+    tokenizer = Tokenizer().setInputCol("tweet").setOutputCol("words")
+    words_data = tokenizer.transform(input_dataframe)
 
-        input_idf = IDF().setInputCol("rawFeatures").setOutputCol("features")
-        input_idf_model = input_idf.fit(input_featurized_data)
+    input_hashingTF = HashingTF().setInputCol("words").setOutputCol("rawFeatures")
+    input_featurized_data = input_hashingTF.transform(words_data)
 
-        input_rescaled_data = input_idf_model.transform(input_featurized_data)
+    input_idf = IDF().setInputCol("rawFeatures").setOutputCol("features")
+    input_idf_model = input_idf.fit(input_featurized_data)
 
-        training_data, test_data = input_rescaled_data.randomSplit([0.75, 0.25], seed=1234)
+    input_rescaled_data = input_idf_model.transform(input_featurized_data)
 
-        model = NaiveBayes().fit(training_data)
-        predictions = model.transform(test_data)
+    training_data, test_data = input_rescaled_data.randomSplit([0.75, 0.25], seed=1234)
 
-        end_time = time.time_ns()
+    model = NaiveBayes().fit(training_data)
+    predictions = model.transform(test_data)
 
-        predictions_and_labels = predictions.select("prediction", "label").rdd.map(lambda row: (float(row["prediction"]), float(row["label"])))
+    end_time = time.time_ns()
 
-        metrics = MulticlassMetrics(predictions_and_labels)
+    predictions_and_labels = predictions.select("prediction", "label").rdd.map(lambda row: (float(row["prediction"]), float(row["label"])))
 
-        print(metrics.confusionMatrix)
-        print("Accuracy: " + str(metrics.accuracy))
-        print("F1 Score: " + str(metrics.weightedFMeasure))
-        print("Execution Duration: " + str((end_time - start_time) / 1_000_000_000) + " seconds")
+    metrics = MulticlassMetrics(predictions_and_labels)
 
-        sc.stop()
+    print(metrics.confusionMatrix)
+    print("Accuracy: " + str(metrics.accuracy))
+    print("F1 Score: " + str(metrics.weightedFMeasure))
+    print("Execution Duration: " + str((end_time - start_time) / 1_000_000_000) + " seconds")
+
+    sc.stop()
+
+
