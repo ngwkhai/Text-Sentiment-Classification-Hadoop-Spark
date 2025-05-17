@@ -329,15 +329,23 @@ public class NB
 
         System.out.println("EXECUTION DURATION: " + (System.nanoTime() - start_time) / 1000000000F + " seconds");
 
-        int tp = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.TRUE_POSITIVE).getValue());
-        int fp = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.FALSE_POSITIVE).getValue());
-        int tn = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.TRUE_NEGATIVE).getValue());
-        int fn = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.FALSE_NEGATIVE).getValue());
+        long TP = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.TRUE_POSITIVE).getValue());
+        long FP = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.FALSE_POSITIVE).getValue());
+        long TN = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.TRUE_NEGATIVE).getValue());
+        long FN = Math.toIntExact(testing_job.getCounters().findCounter(Global_Counters.FALSE_NEGATIVE).getValue());
 
-        System.out.println("\nCONFUSION MATRIX:");
-        System.out.printf("%-10s %-10s \n", tp, fp);
-        System.out.printf("%-10s %-10s \n\n", fn, tn);
+        long total = TP + TN + FP + FN;
+        double accuracy = ((double)(TP + TN)) / total;
+        double precision = TP / (double)(TP + FP);
+        double recall = TP / (double)(TP + FN);
+        double f1_score = 2 * precision * recall / (precision + recall);
 
-        System.out.printf("%-25s %-10s \n", "ACCURACY: ", ((double) (tp + tn)) / (tp + tn + fp + fn));
+        System.out.println("Confusion Matrix:");
+        System.out.println("TP: " + TP + "\tFP: " + FP);
+        System.out.println("FN: " + FN + "\tTN: " + TN);
+        System.out.printf("Accuracy: %.4f\n", accuracy);
+        System.out.printf("F1-Score: %.4f\n", f1_score);
+        System.out.printf("Precision: %.4f\n", precision);
+        System.out.printf("Recall: %.4f\n", recall);
     }
 }

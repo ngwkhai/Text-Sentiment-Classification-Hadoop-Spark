@@ -80,7 +80,11 @@ hdfs dfs -put /input /user/username/input_text_sentiment/
 #### Với Naive Bayes
 
 ```bash
-javac -classpath "$(yarn classpath)" -d NB_classes Hadoop/NB.java
+cd Hadoop/NB
+mkdir NB_classes
+```
+```bash
+javac -classpath "$(yarn classpath)" -d NB_classes NB.java
 jar -cvf NB.jar -C NB_classes/ .
 hadoop jar NB.jar NB /input_text_sentiment/train# /input_text_sentiment/test# training_split testing_split
 ```
@@ -89,7 +93,12 @@ hadoop jar NB.jar NB /input_text_sentiment/train# /input_text_sentiment/test# tr
 #### Với SVM
 
 ```bash
-javac -classpath "$(yarn classpath)" -d SVM_classes Hadoop/SVM.java
+cd Hadoop/SVM
+mkdir SVM_classes
+```
+
+```bash
+javac -classpath "$(yarn classpath)" -d SVM_classes SVM.java
 jar -cvf SVM.jar -C SVM_classes/ .
 hadoop jar SVM.jar SVM /input_text_sentiment/train# /input_text_sentiment/test# training_split testing_split
 ```
