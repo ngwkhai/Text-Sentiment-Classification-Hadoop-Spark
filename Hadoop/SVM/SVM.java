@@ -161,6 +161,8 @@ public class SVM {
         Path outBase = new Path("training");
         if (fs.exists(outBase)) fs.delete(outBase, true);
 
+        long start_time = System.nanoTime();
+
         // iterative epochs
         for (int epoch = 1; epoch <= EPOCHS; epoch++) {
             conf.setInt("epoch", epoch);
@@ -202,6 +204,8 @@ public class SVM {
         TextInputFormat.setMaxInputSplitSize(testJob, testSplit);
         TextOutputFormat.setOutputPath(testJob, outputDir);
         testJob.waitForCompletion(true);
+
+        System.out.println("EXECUTION DURATION: " + (System.nanoTime() - start_time) / 1000000000F + " seconds");
 
         // Metrics
         Counters ctr = testJob.getCounters();
