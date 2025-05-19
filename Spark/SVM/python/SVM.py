@@ -44,7 +44,7 @@ if __name__ == "__main__":
         SVM.clean_text(column[3])  # cleaned tweet
     ))
 
-    spark = SparkSession.builder.appName("Naive Bayes").getOrCreate()
+    spark = SparkSession.builder.appName("Support Vector Machines").getOrCreate()
     input_dataframe = spark.createDataFrame(input, ["label", "tweet"])
 
     tokenizer = Tokenizer().setInputCol("tweet").setOutputCol("words")
