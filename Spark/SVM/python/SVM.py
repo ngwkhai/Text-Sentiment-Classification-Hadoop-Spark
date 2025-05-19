@@ -70,9 +70,9 @@ if __name__ == "__main__":
 
     metrics = MulticlassMetrics(predictions_and_labels)
 
-    print(metrics.confusionMatrix)
+    print(metrics.confusionMatrix().toArray())
     print("Accuracy: " + str(metrics.accuracy))
-    print("F1 Score: " + str(metrics.weightedFMeasure))
+    print("F1 Score: " + str(metrics.weightedFMeasure()))
     print("Execution Duration: " + str((end_time - start_time) / 1_000_000_000) + " seconds")
 
     sc.stop()
