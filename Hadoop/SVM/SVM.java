@@ -161,6 +161,8 @@ public class SVM {
         Path outBase = new Path("training");
         if (fs.exists(outBase)) fs.delete(outBase, true);
 
+        long start_time = System.nanoTime();
+
         // iterative epochs
         for (int epoch = 1; epoch <= EPOCHS; epoch++) {
             conf.setInt("epoch", epoch);
@@ -203,17 +205,27 @@ public class SVM {
         TextOutputFormat.setOutputPath(testJob, outputDir);
         testJob.waitForCompletion(true);
 
+        System.out.println("EXECUTION DURATION: " + (System.nanoTime() - start_time) / 1000000000F + " seconds");
+
         // Metrics
         Counters ctr = testJob.getCounters();
-        long tp = ctr.findCounter(Global_Counters.TRUE_POSITIVE).getValue();
-        long fp = ctr.findCounter(Global_Counters.FALSE_POSITIVE).getValue();
-        long tn = ctr.findCounter(Global_Counters.TRUE_NEGATIVE).getValue();
-        long fn = ctr.findCounter(Global_Counters.FALSE_NEGATIVE).getValue();
-        long total = ctr.findCounter(Global_Counters.SAMPLES_PROCESSED).getValue();
-        double accuracy = (double)(tp + tn) / total;
-        System.out.println("CONFUSION MATRIX:");
-        System.out.printf("%10d %10d\n", tp, fp);
-        System.out.printf("%10d %10d\n", fn, tn);
-        System.out.printf("ACCURACY: %.4f\n", accuracy);
+        long TP = ctr.findCounter(Global_Counters.TRUE_POSITIVE).getValue();
+        long FP = ctr.findCounter(Global_Counters.FALSE_POSITIVE).getValue();
+        long TN = ctr.findCounter(Global_Counters.TRUE_NEGATIVE).getValue();
+        long FN = ctr.findCounter(Global_Counters.FALSE_NEGATIVE).getValue();
+
+        long total = TP + TN + FP + FN;
+        double accuracy = ((double)(TP + TN)) / total;
+        double precision = TP / (double)(TP + FP);
+        double recall = TP / (double)(TP + FN);
+        double f1_score = 2 * precision * recall / (precision + recall);
+
+        System.out.println("Confusion Matrix:");
+        System.out.println("TP: " + TP + "\tFP: " + FP);
+        System.out.println("FN: " + FN + "\tTN: " + TN);
+        System.out.printf("Accuracy: %.4f\n", accuracy);
+        System.out.printf("F1-Score: %.4f\n", f1_score);
+        System.out.printf("Precision: %.4f\n", precision);
+        System.out.printf("Recall: %.4f\n", recall);
     }
 }
