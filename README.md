@@ -113,6 +113,23 @@ hadoop jar SVM.jar SVM /input_text_sentiment/train# /input_text_sentiment/test# 
 
 ### Thực thi trên Spark
 
+#### Khởi động Hadoop
+
+```bash
+start-dfs.sh
+start-yarn.sh
+```
+
+#### Với Naive Bayes
+```bash
+spark-submit --master yarn /path/to/NaiveBayes.py {arg0}
+```
+
+#### Với SVM
+```bash
+spark-submit --master yarn /path/to/SVM.py {arg0}
+```
+
 ##  Kết quả và đánh giá
 
 Kết quả phân loại được phân tích theo:
