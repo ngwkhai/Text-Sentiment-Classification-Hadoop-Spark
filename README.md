@@ -61,21 +61,22 @@ git clone https://github.com/ngwkhai/Text-Sentiment-Classification-Hadoop-Spark.
 cd Text-Sentiment-Classification-Hadoop-Spark
 ```
 
-### Thực thi trên Hadoop
 
-#### Khởi động Hadoop
+
+### Khởi động Hadoop
 
 ```bash
 start-dfs.sh
 start-yarn.sh
 ```
 
-#### Upload dữ liệu vào HDFS
+### Upload dữ liệu vào HDFS
 
 ```bash
 hdfs dfs -mkdir -p /user/username/input_text_sentiment
 hdfs dfs -put /input /user/username/input_text_sentiment/
 ```
+### Thực thi trên Hadoop
 
 #### Với Naive Bayes
 
@@ -106,19 +107,12 @@ hadoop jar SVM.jar SVM /input_text_sentiment/train# /input_text_sentiment/test# 
 
 **Chú thích**:
 
-* `train#`, `test#`: là tên các file dữ liệu trong thư mục `/input`
-* `training_split`, `testing_split`: số byte để chia nhỏ dữ liệu cho các mapper
+* `train#`, `test#`: tên các file dữ liệu trong thư mục `/input`.
+* `training_split`, `testing_split`: số byte để chia nhỏ dữ liệu cho các mapper.
 
 ---
 
 ### Thực thi trên Spark
-
-#### Khởi động Hadoop
-
-```bash
-start-dfs.sh
-start-yarn.sh
-```
 
 #### Với Naive Bayes
 ```bash
@@ -129,6 +123,11 @@ spark-submit --master yarn /path/to/NaiveBayes.py {arg0}
 ```bash
 spark-submit --master yarn /path/to/SVM.py {arg0}
 ```
+
+**Chú thích**:
+
+* `/path/to/NaiveBayes.py`, `/path/to/SVM.py`: Đường dẫn tuyệt đối tới file python của thuật toán.
+* `arg0`: Tham số đầu tiên trong mảng tham số, biểu thị số thứ tự của file input cần chạy (`spark_input_{arg0}`).
 
 ##  Kết quả và đánh giá
 
