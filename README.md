@@ -134,7 +134,7 @@ spark-submit --master yarn /path/to/SVM.py {arg0}
 
 Kết quả phân loại được phân tích theo:
 
-* **Ma trận nhầm lẫn** (confusion matrix)
+* **Ma trận nhầm lẫn (confusion matrix)**
 * **Chỉ số F1-score, độ chính xác (accuracy)**
 * **Tốc độ thực thi, khả năng mở rộng (scalability) và speedup**
 
